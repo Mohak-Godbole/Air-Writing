@@ -1,0 +1,377 @@
+/* === Base Reset & Variables === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg-dark: #0a0a0f;
+    --accent-cyan: #00f5ff;
+    --accent-magenta: #ff00ff;
+    --accent-green: #00ff88;
+    --accent-orange: #ff6b35;
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+/* === Layout === */
+body {
+    background: var(--bg-dark);
+    overflow: hidden;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    width: 100vw;
+    height: 100vh;
+}
+
+#container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* === Video Feed === */
+#video {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1);
+}
+
+/* === Drawing Canvas === */
+#drawingCanvas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    transform: scaleX(-1);
+}
+
+/* === Eraser Circle Indicator === */
+#eraserCircle {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border: 3px solid var(--accent-orange);
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, -50%) scaleX(-1);
+    transition: opacity 0.15s ease, width 0.2s ease, height 0.2s ease;
+    box-shadow:
+        0 0 20px rgba(255, 107, 53, 0.4),
+        inset 0 0 15px rgba(255, 107, 53, 0.2);
+}
+
+#eraserCircle.active {
+    opacity: 1;
+}
+
+/* === Mode Indicator === */
+#modeIndicator {
+    position: fixed;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 50px;
+    padding: 12px 32px;
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        0 0 40px rgba(0, 245, 255, 0.1);
+}
+
+#modeText {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.9);
+    transition: color 0.3s ease;
+}
+
+#modeIndicator.drawing #modeText {
+    color: var(--accent-cyan);
+    text-shadow: 0 0 20px rgba(0, 245, 255, 0.6);
+}
+
+#modeIndicator.paused #modeText {
+    color: var(--accent-magenta);
+    text-shadow: 0 0 20px rgba(255, 0, 255, 0.6);
+}
+
+#modeIndicator.erasing #modeText {
+    color: var(--accent-orange);
+    text-shadow: 0 0 20px rgba(255, 107, 53, 0.6);
+}
+
+#modeIndicator.no-hand #modeText {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* === Controls Panel === */
+#controlsPanel {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 200;
+}
+
+#toggleControls {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#toggleControls:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
+}
+
+#controlsContent {
+    position: absolute;
+    bottom: 60px;
+    right: 0;
+    width: 280px;
+    background: rgba(15, 15, 25, 0.95);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 20px;
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+#controlsContent.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px);
+}
+
+.control-group {
+    margin-bottom: 18px;
+}
+
+.control-group label {
+    display: block;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Color Options */
+.color-options {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.color-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.color-btn:hover {
+    transform: scale(1.15);
+}
+
+.color-btn.active {
+    border-color: white;
+    box-shadow: 0 0 10px currentColor;
+}
+
+#customColor {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    background: transparent;
+}
+
+#customColor::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+#customColor::-webkit-color-swatch {
+    border-radius: 50%;
+    border: 2px solid var(--glass-border);
+}
+
+/* Range Sliders */
+input[type="range"] {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    appearance: none;
+    cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent-cyan);
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 245, 255, 0.5);
+}
+
+/* Shape Input */
+#shapeInput {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+#shapeInput::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+#shapeInput:focus {
+    outline: none;
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 10px rgba(0, 245, 255, 0.2);
+}
+
+#drawShapeBtn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#drawShapeBtn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px rgba(0, 245, 255, 0.4);
+}
+
+/* Clear Button */
+.danger-btn {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid rgba(255, 100, 100, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 50, 50, 0.1);
+    color: #ff6b6b;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.danger-btn:hover {
+    background: rgba(255, 50, 50, 0.3);
+}
+
+/* === Permission Overlay === */
+#permissionOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 10, 15, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+#permissionOverlay.hidden {
+    display: none;
+}
+
+.permission-content {
+    text-align: center;
+    color: white;
+    padding: 40px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+}
+
+.permission-content h2 {
+    font-size: 2rem;
+    margin-bottom: 15px;
+}
+
+.permission-content p {
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 25px;
+}
+
+.permission-content button {
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+    border: none;
+    color: white;
+    padding: 14px 36px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.permission-content button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(0, 245, 255, 0.4);
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+    #modeIndicator {
+        padding: 10px 24px;
+    }
+
+    #modeText {
+        font-size: 0.9rem;
+        letter-spacing: 1.5px;
+    }
+
+    #eraserCircle {
+        width: 60px;
+        height: 60px;
+    }
+
+    #controlsPanel {
+        bottom: 20px;
+        right: 20px;
+    }
+
+    #controlsContent {
+        width: 250px;
+        right: -10px;
+    }
+}

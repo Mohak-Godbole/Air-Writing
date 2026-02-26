@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Writing</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="container">
+        <!-- Webcam video feed -->
+        <video id="video" autoplay playsinline></video>
+
+        <!-- Drawing canvas overlay -->
+        <canvas id="drawingCanvas"></canvas>
+
+        <!-- Eraser visual indicator -->
+        <div id="eraserCircle"></div>
+
+        <!-- Mode indicator -->
+        <div id="modeIndicator">
+            <span id="modeText">Initializing...</span>
+        </div>
+
+        <!-- Controls Panel -->
+        <div id="controlsPanel">
+            <button id="toggleControls" title="Toggle Controls">⚙️</button>
+
+            <div id="controlsContent" class="hidden">
+                <!-- Color Picker -->
+                <div class="control-group">
+                    <label>Color</label>
+                    <div class="color-options">
+                        <button class="color-btn active" data-color="#00f5ff" style="background: #00f5ff;" title="Cyan"
+                            aria-label="Cyan color"></button>
+                        <button class="color-btn" data-color="#ff00ff" style="background: #ff00ff;" title="Magenta"
+                            aria-label="Magenta color"></button>
+                        <button class="color-btn" data-color="#00ff88" style="background: #00ff88;" title="Green"
+                            aria-label="Green color"></button>
+                        <button class="color-btn" data-color="#ff6b35" style="background: #ff6b35;" title="Orange"
+                            aria-label="Orange color"></button>
+                        <button class="color-btn" data-color="#ffff00" style="background: #ffff00;" title="Yellow"
+                            aria-label="Yellow color"></button>
+                        <button class="color-btn" data-color="#ffffff" style="background: #ffffff;" title="White"
+                            aria-label="White color"></button>
+                        <input type="color" id="customColor" value="#00f5ff" title="Custom Color">
+                    </div>
+                </div>
+
+                <!-- Pencil Size -->
+                <div class="control-group">
+                    <label for="pencilSize">Pencil: <span id="pencilSizeValue">4</span>px</label>
+                    <input type="range" id="pencilSize" min="1" max="20" value="4" title="Adjust pencil size">
+                </div>
+
+                <!-- Eraser Size -->
+                <div class="control-group">
+                    <label for="eraserSize">Eraser: <span id="eraserSizeValue">40</span>px</label>
+                    <input type="range" id="eraserSize" min="20" max="100" value="40" title="Adjust eraser size">
+                </div>
+
+                <!-- Shape Input -->
+                <div class="control-group">
+                    <label>Draw Shape</label>
+                    <input type="text" id="shapeInput" placeholder="circle, square, triangle, star, heart...">
+                    <button id="drawShapeBtn">Draw</button>
+                </div>
+
+                <!-- Clear Canvas -->
+                <button id="clearCanvas" class="danger-btn">Clear All</button>
+            </div>
+        </div>
+
+        <!-- Permission denied overlay -->
+        <div id="permissionOverlay" class="hidden">
+            <div class="permission-content">
+                <h2>📷 Camera Access Required</h2>
+                <p>Please allow camera access to use Air Writing</p>
+                <button onclick="location.reload()">Try Again</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MediaPipe Hands -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
